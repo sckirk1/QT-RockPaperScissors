@@ -114,6 +114,7 @@ void RockPaperScissorsWindow::on_aboutButton_clicked()
 
 // ================ HELPER METHODS ====================
 // TODO: See if these can be loaded once instead of created each time we need them
+// TODO: See of we can use relative paths instead, maybe ./path/from/root?
 QPixmap RockPaperScissorsWindow::loadQuestionMarkImage() {
     QPixmap pixmap("C:/Users/samki/Desktop/RPS/questionMark.png");
     return pixmap;
