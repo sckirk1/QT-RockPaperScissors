@@ -2,6 +2,8 @@
 #define ROCKPAPERSCISSORSWINDOW_H
 
 #include <QMainWindow>
+#include <QPixmap>
+#include <string.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,8 +29,17 @@ private slots:
 
     void on_playButton_clicked();
 
+    void on_resetButton_clicked();
+
+    void on_aboutButton_clicked();
+
 private:
     std::string userChoice;
     Ui::RockPaperScissorsWindow *ui;
+    QPixmap loadQuestionMarkImage();
+    QPixmap loadScissorsImage();
+    QPixmap loadPaperImage();
+    QPixmap loadRockImage();
+    void setComputerImage(std::string);
 };
 #endif // ROCKPAPERSCISSORSWINDOW_H

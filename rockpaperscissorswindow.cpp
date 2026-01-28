@@ -1,57 +1,149 @@
 #include "rockpaperscissorswindow.h"
 #include "./ui_rockpaperscissorswindow.h"
-#include <QPixmap>
+#include <time.h>
+#include <string.h>
+#include "aboutdialog.h"
 
-RockPaperScissorsWindow::RockPaperScissorsWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::RockPaperScissorsWindow)
-{
+using namespace std;
+
+static std::string options[] = {"rock", "paper", "scissors"};
+static AboutDialog *about; // TODO: This is currently a static varaible, we may be able to make it not static. Look into which options are better
+
+// ============== CONSTRUCTORS & DESTRUCTOR =====================
+RockPaperScissorsWindow::RockPaperScissorsWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::RockPaperScissorsWindow) {
+    // QT Required setup call
     ui->setupUi(this);
 
-    QPixmap paperImage("C:/Users/samki/Desktop/RPS/paper.jpg");
-    QPixmap scissorsImage("C:/Users/samki/Desktop/RPS/R.png");
-    ui->userChoiceLabel->setPixmap(scissorsImage);
+    // Setting up the lables to hold PixMaps
+    ui->userChoiceLabel->setScaledContents(true);
+    ui->oppPickLabel->setScaledContents(true);
+
+    // Setup the initial images
+    ui->oppPickLabel->setPixmap(loadQuestionMarkImage());
+    ui->userChoiceLabel->setPixmap(loadQuestionMarkImage());
+
+
+    ui->playButton->setEnabled(false);
+    std::srand(time(NULL));
 }
 
-RockPaperScissorsWindow::~RockPaperScissorsWindow()
-{
+RockPaperScissorsWindow::~RockPaperScissorsWindow() {
+    // Cleans up the memory used by this window when closed
     delete ui;
 }
 
 
-void RockPaperScissorsWindow::on_rockButton_clicked()
-{
-    QPixmap rockImage("C:/Users/samki/Desktop/RPS/rock.png");
-    ui->userChoiceLabel->setText("You Chose: Rock");
-    ui->userChoiceLabel->setPixmap(rockImage);
-    ui->userChoiceLabel->setScaledContents(true);
+// ================= SLOTS ====================
+
+void RockPaperScissorsWindow::on_rockButton_clicked() {
+    userChoice = "rock";
+    ui->userChoiceLabel->setPixmap(loadRockImage());
+    ui->playButton->setEnabled(true);
 }
 
 
-void RockPaperScissorsWindow::on_paperButton_clicked()
-{
-    QPixmap paperImage("C:/Users/samki/Desktop/RPS/paper.jpg");
-    ui->userChoiceLabel->setText("You Chose: Paper");
-    ui->userChoiceLabel->setPixmap(paperImage);
-    ui->userChoiceLabel->setScaledContents(true);
-    userChoice = "Paper";
+void RockPaperScissorsWindow::on_paperButton_clicked() {
+    userChoice = "paper";
+    ui->userChoiceLabel->setPixmap(loadPaperImage());
+    ui->playButton->setEnabled(true);
 }
 
 
-void RockPaperScissorsWindow::on_scissorsButton_clicked()
+void RockPaperScissorsWindow::on_scissorsButton_clicked() {
+    userChoice = "scissors";
+    ui->userChoiceLabel->setPixmap(loadScissorsImage());
+    ui->playButton->setEnabled(true);
+}
+
+
+void RockPaperScissorsWindow::on_playButton_clicked() {
+    //TODO: Compare Enums instead of strings
+    // Game Logic could also be cleaner probably
+    string computerChoice = options[(rand() % 3)];
+    setComputerImage(computerChoice);
+
+    if (computerChoice == userChoice) {
+        // Tie Game
+        ui->resultLabel->setText("It's a Tie!");
+    } else {
+        if (userChoice == "scissors") {
+            if (computerChoice == "rock") {
+                // Comp wins
+                ui->resultLabel->setText("You Lose!");
+            } else {
+                // User wins
+                ui->resultLabel->setText("You Win!");
+            }
+        } else if (userChoice == "rock") {
+            if (computerChoice == "paper") {
+                // Comp wins
+                ui->resultLabel->setText("You Lose!");
+            } else {
+                // User wins
+                ui->resultLabel->setText("You Win!");
+            }
+        } else if (computerChoice == "scissors") {
+            // Comp wins
+            ui->resultLabel->setText("You Lose!");
+        } else {
+            // User wins
+            ui->resultLabel->setText("You Win!");
+        }
+    }
+    ui->playButton->setEnabled(false);
+}
+
+
+void RockPaperScissorsWindow::on_resetButton_clicked()
 {
-    QPixmap scissorsImage("C:/Users/samki/Desktop/RPS/R.png");
-    ui->userChoiceLabel->setText("You Chose: Scissors");
-    ui->userChoiceLabel->setPixmap(scissorsImage);
-    ui->userChoiceLabel->setScaledContents(true);
+    ui->oppPickLabel->setPixmap(loadQuestionMarkImage());
+    ui->userChoiceLabel->setPixmap(loadQuestionMarkImage());
+    ui->playButton->setEnabled(false);
+}
+
+
+void RockPaperScissorsWindow::on_aboutButton_clicked()
+{
+    about = new AboutDialog(this);
+    about->show();
 }
 
 
 
 
-void RockPaperScissorsWindow::on_playButton_clicked()
-{
-    userChoice
 
+// ================ HELPER METHODS ====================
+// TODO: See if these can be loaded once instead of created each time we need them
+QPixmap RockPaperScissorsWindow::loadQuestionMarkImage() {
+    QPixmap pixmap("C:/Users/samki/Desktop/RPS/questionMark.png");
+    return pixmap;
+}
+
+
+QPixmap RockPaperScissorsWindow::loadScissorsImage() {
+    QPixmap pixmap("C:/Users/samki/Desktop/RPS/scissors.png");
+    return pixmap;
+}
+
+
+QPixmap RockPaperScissorsWindow::loadPaperImage() {
+    QPixmap pixmap("C:/Users/samki/Desktop/RPS/paper.jpg");
+    return pixmap;
+}
+
+
+QPixmap RockPaperScissorsWindow::loadRockImage() {
+    QPixmap pixmap("C:/Users/samki/Desktop/RPS/rock.png");
+    return pixmap;
+}
+
+void RockPaperScissorsWindow::setComputerImage(string computerChoice) {
+    if (computerChoice == "rock") {
+        ui->oppPickLabel->setPixmap(loadRockImage());
+    } else if (computerChoice == "paper") {
+        ui->oppPickLabel->setPixmap(loadPaperImage());
+    } else {
+        ui->oppPickLabel->setPixmap(loadScissorsImage());
+    }
 }
 
